@@ -1,5 +1,6 @@
 const express = require("express");
-const { client } = require("./db/client");
+const client  = require("./db/client");
+const apiRouter = require('./api/main');
 
 const app = express();
 const PORT = 8080;
