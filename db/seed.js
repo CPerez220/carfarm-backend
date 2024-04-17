@@ -1,5 +1,5 @@
 const client = require('./client');
-const { addCar } = require('./available');
+const { addCar } = require(`./index`);
 
 const dropTables = async() => {
   try {
