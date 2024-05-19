@@ -1,12 +1,11 @@
 const requireUser = (req, res, next) => {
-  if(req.user){
+  if (req.user) {
     next();
+  } else {
+    res.status(401).send('Authentication required. Please log in.');
   }
-  else{
-    res.sendStatus(401);
-  }
-}
+};
 
 module.exports = {
-  requireUser
-}
+  requireUser,
+};

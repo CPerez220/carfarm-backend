@@ -1,42 +1,44 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {getUserById} = require('../db/index');
+const { getUserById } = require('../db/index');
+
 const apiRouter = express.Router();
 
-apiRouter.use( async (req, res, next)=> {
-  const prefix = "Bearer ";
+// Middleware for handling authentication
+apiRouter.use(async (req, res, next) => {
+  const prefix = 'Bearer ';
   const auth = req.header('Authorization');
 
-  if(!auth){
+  if (!auth) {
     next();
-  }
-  else if(auth.startsWith(prefix)){
-
+  } else if (auth.startsWith(prefix)) {
     const token = auth.slice(prefix.length);
 
-    const {id} = jwt.verify(token, process.env.JWT_SECRET);
+    try {
+      const { id } = jwt.verify(token, process.env.JWT_SECRET);
 
-    if(id){
-      const user = await getUserById(id);
-      req.user = {id: user.id, username: user.username};
-      next();
-    }else{
-      next();
+      if (id) {
+        const user = await getUserById(id);
+        req.user = { id: user.id, username: user.username };
+      }
+    } catch (error) {
+      console.error('Error verifying JWT:', error);
     }
-
   }
-  else{
-    next();
-  }
-})
 
-apiRouter.get("/", (req, res)=> {
-  res.send("This is the root for /api");
-})
+  next();
+});
 
+// Root route
+apiRouter.get('/', (req, res) => {
+  res.send('This is the root for /api');
+});
+
+// Users routes
 const usersRouter = require('./users');
 apiRouter.use('/users', usersRouter);
 
+// Cars routes
 const carsRouter = require('./cars');
 apiRouter.use('/cars', carsRouter);
 
